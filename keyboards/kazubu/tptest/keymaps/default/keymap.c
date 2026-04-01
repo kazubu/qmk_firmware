@@ -12,66 +12,76 @@ static uint32_t last_nonzero = 0;
 #endif
 
 enum custom_keycodes {
-	LPPS_CALIB = SAFE_RANGE,
+  LPPS_CALIB = SAFE_RANGE,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [0] = LAYOUT(
-				LPPS_CALIB
+        LPPS_CALIB
     ),
 
     [1] = LAYOUT(
-				LPPS_CALIB
+        LPPS_CALIB
     ),
 
     [2] = LAYOUT(
-				LPPS_CALIB
+        LPPS_CALIB
     )
 
 };
 
 void keyboard_post_init_user(void) {
 #ifdef CONSOLE_ENABLE
-	debug_enable = true;
-	debug_mouse = true;
+  debug_enable = true;
+  debug_mouse = true;
 #endif
 }
 
 void housekeeping_task_user(void) {
 #ifdef CONSOLE_ENABLE
-	if (debug_enable && debug_mouse && timer_elapsed(last_log) >= 1000) {
-		uint32_t now_report   = lpps_debug_get_report_count;
-		uint32_t now_ok       = lpps_debug_read_ok_count;
-		uint32_t now_nonzero  = lpps_debug_nonzero_count;
-		uprintf("LPPS dbg: report/s=%lu ok/s=%lu nonzero/s=%lu max=(%d,%d,%d)\n",
-				(unsigned long)(now_report - last_report),
-				(unsigned long)(now_ok - last_ok),
-				(unsigned long)(now_nonzero - last_nonzero),
-				lpps_debug_max_abs_x,
-				lpps_debug_max_abs_y,
-				lpps_debug_max_abs_z);
+  if (debug_enable && debug_mouse && timer_elapsed(last_log) >= 1000) {
+    uint32_t now_report   = lpps_debug_get_report_count;
+    uint32_t now_ok       = lpps_debug_read_ok_count;
+    uint32_t now_nonzero  = lpps_debug_nonzero_count;
+    lpps_debug_state_t st;
 
-		last_report  = now_report;
-		last_ok      = now_ok;
-		last_nonzero = now_nonzero;
-		last_log = timer_read();
+    lpps_get_debug_state(&st);
 
-		lpps_debug_max_abs_x = 0;
-		lpps_debug_max_abs_y = 0;
-		lpps_debug_max_abs_z = 0;
-	}
+    uprintf("LPPS dbg: report/s=%lu ok/s=%lu nonzero/s=%lu max=(%d,%d,%d) state:{cpi=%u calib=%u bias_q8=(%d,%d) streak=%u since_calib=%u}\n",
+                (unsigned long)(now_report - last_report),
+                (unsigned long)(now_ok - last_ok),
+                (unsigned long)(now_nonzero - last_nonzero),
+                lpps_debug_max_abs_x,
+                lpps_debug_max_abs_y,
+                lpps_debug_max_abs_z,
+                st.runtime_cpi,
+                st.calibration_pending ? 1 : 0,
+                st.bias_x_q8,
+                st.bias_y_q8,
+                st.zero_streak,
+                st.since_last_calibration_ms);
+
+    last_report  = now_report;
+    last_ok      = now_ok;
+    last_nonzero = now_nonzero;
+    last_log = timer_read();
+
+    lpps_debug_max_abs_x = 0;
+    lpps_debug_max_abs_y = 0;
+    lpps_debug_max_abs_z = 0;
+  }
 #endif
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-	switch (keycode) {
-		case LPPS_CALIB:
-			if (record->event.pressed) {
-				lpps_request_calibration();
-			}
-			return false;
-		default:
-			return true;
-	}
+  switch (keycode) {
+    case LPPS_CALIB:
+      if (record->event.pressed) {
+        lpps_request_calibration();
+      }
+      return false;
+    default:
+      return true;
+  }
 }
