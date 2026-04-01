@@ -46,6 +46,10 @@
 #    define LPPS_CPI_MAX 4000
 #endif
 
+#ifndef LPPS_DEAD_ZONE
+#    define LPPS_DEAD_ZONE 1
+#endif
+
 typedef struct {
     int8_t x;
     int8_t y;

@@ -67,6 +67,10 @@ static inline int16_t lpps_apply_axis_scale(int8_t raw) {
     return value;
 }
 
+static inline int8_t lpps_apply_deadzone(int8_t v) {
+    return (v >= -LPPS_DEAD_ZONE && v <= LPPS_DEAD_ZONE) ? 0 : v;
+}
+
 static bool lpps_motion_pin_active(void) {
 #ifdef POINTING_DEVICE_MOTION_PIN
 #    ifdef POINTING_DEVICE_MOTION_PIN_ACTIVE_LOW
@@ -185,8 +189,8 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     }
 #endif
 
-    mouse_report.x = lpps_clamp_xy(lpps_apply_axis_scale(raw.x)); // Upper is positive
-    mouse_report.y = lpps_clamp_xy(lpps_apply_axis_scale(-raw.y)); // Left is positive
+    mouse_report.x = lpps_clamp_xy(lpps_apply_axis_scale(lpps_apply_deadzone(raw.x)));
+    mouse_report.y = lpps_clamp_xy(lpps_apply_axis_scale(lpps_apply_deadzone(-raw.y)));
 
     return mouse_report;
 }
