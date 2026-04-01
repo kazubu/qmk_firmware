@@ -1,0 +1,6 @@
+POINTING_DEVICE_ENABLE = yes
+POINTING_DEVICE_DRIVER = custom
+I2C_DRIVER_REQUIRED = yes
+CONSOLE_ENABLE = yes
+
+SRC += drivers/pointing/lpps_i2c.c

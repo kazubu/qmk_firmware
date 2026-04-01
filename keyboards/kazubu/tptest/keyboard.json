@@ -1,0 +1,37 @@
+{
+    "manufacturer": "kazubu",
+    "keyboard_name": "tptest",
+    "maintainer": "kazubu",
+    "bootloader": "rp2040",
+    "build": {
+        "debounce_type": "asym_eager_defer_pk"
+    },
+    "diode_direction": "COL2ROW",
+    "dynamic_keymap": {
+        "layer_count": 6
+    },
+    "features": {
+        "bootmagic": true,
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true
+    },
+    "matrix_pins": {
+        "cols": ["GP27"],
+        "rows": ["GP26"]
+    },
+    "processor": "RP2040",
+    "url": "https://kazubu.jp/",
+    "usb": {
+        "device_version": "0.0.1",
+        "pid": "0xFFFE",
+        "vid": "0xA103"
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                {"matrix": [0, 0], "x": 0, "y": 0}
+            ]
+        }
+    }
+}
